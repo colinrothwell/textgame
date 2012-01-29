@@ -39,6 +39,7 @@ public class Command {
     private static String[] quit = {"q","quit","exit"};
     private static String[] take = {"take"};
     private static String[] look = {"look"};
+    private static String[] inventory = {"inventory"};
 
     /**
      * Verb enum type defines the verbs that can be used and their spellings.
@@ -62,14 +63,14 @@ public class Command {
             UserResponse execute(String[] args, Player player) {
                 switch (args.length) {
                     case 2:
-                        player.use(args[0], args[1]);
-                        break;
+                        return player.use(args[0], args[1]);
                     case 3:
                         if (args[1].equals("and") || args[1].equals("or")) {
-                            player.use(args[0], args[2]); 
+                            return player.use(args[0], args[2]); 
                         }
                         break;
                 }
+                System.out.println("Args: " + args.length);
                 return UserResponse.error("Wrong amount of arguments");
             }
         },
@@ -105,6 +106,21 @@ public class Command {
         QUIT(quit) {
             UserResponse execute(String[] args, Player player) {
                 return UserResponse.quit("Goodbye!");
+            }
+        },
+        INVENTORY(inventory) {
+            UserResponse execute(String[] args, Player player) {
+                if (args.length == 0) {
+                    return UserResponse.message("You have " + player.describeItems() + ".");
+                }
+                else {
+                    String objectName = concatenate(args);
+                    Item obj = player.itemWithName(objectName);
+                    if (obj == null) {
+                        return UserResponse.error("You don't have anything called " + objectName + ".");
+                    }
+                    return UserResponse.message(obj.getDescription() + ".");
+                }
             }
         };
 

@@ -1,5 +1,6 @@
 package textgame;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,6 +29,8 @@ public class Game {
         TransformationManager tm = new TransformationManager();
         player = new Player(makeMap(), tm);
         printer = new Printer(player);
+
+        tm.addTransformation(_makeIncompleteSupervisionWork());
     }
 
     /**
@@ -72,6 +75,17 @@ public class Game {
 
     protected Item _makePaper() {
         return new Item("paper", "paper", "A4, Margin, Lined. 80gsm, High quality.");
+    }
+
+    protected Transformation _makeIncompleteSupervisionWork() {
+        List<String> in = new ArrayList<String>();
+        in.add("pen");
+        in.add("paper");
+        List<Item> out = new ArrayList<Item>();
+        out.add(new Item("isw", "incomplete supervision work", 
+                    "you tried your best, but you just don't know enough to " +
+                    "complete this supervision work"));
+        return new Transformation(in, out);
     }
 
     /**

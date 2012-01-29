@@ -21,7 +21,14 @@ public class TransformationManager {
     }
 
     public Set<Transformation> getTransformations(List<String> input) {
-        Set<Transformation> res = new HashSet<Transformation>(transformations.get(input.get(0)));
+        Set<Transformation> res = transformations.get(input.get(0));
+
+        if (res == null) {
+            return new HashSet<Transformation>();
+        }
+        else {
+            res = new HashSet<Transformation>(res);
+        }
 
         for (int i = 1; i < res.size(); ++i) {
             res.retainAll(transformations.get(input.get(1)));

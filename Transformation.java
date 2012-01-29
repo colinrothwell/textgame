@@ -1,6 +1,7 @@
 package textgame;
 
 import java.util.*;
+import java.lang.IllegalArgumentException;
 
 /**
  * Represents some way in which items can be transformed to make new items.
@@ -14,22 +15,20 @@ import java.util.*;
  * @see Item
  */
 public class Transformation {
-	private String name;
     private List<String> input;
 	private List<Item> output;
 	
-	public Transformation(String n, List<String> in, List<Item> out) {
-		name = n;
+	public Transformation(List<String> in, List<Item> out) {
         input = in;
         output = out;
 	}
 	
-    public UserResponse performTransformation(ItemContainer player) {
+    public UserResponse performTransformation(ItemContainer player) throws IllegalArgumentException {
         ArrayList<Item> consumed = new ArrayList<Item>();
         for (String type : input) {
             Item it = player.itemOfType(type);
             if (it == null) {
-                return UserResponse.error("You must have an object of type " + type + " to " + name + ".");
+                throw new IllegalArgumentException();
             }
             consumed.add(it);
         }
@@ -45,10 +44,6 @@ public class Transformation {
         return UserResponse.message("Removed " + ItemContainer.describeItems(consumed) +
                 ", and added " + ItemContainer.describeItems(output) + ".");
     }
-
-	public String getName() {
-		return name;
-	}
 
     public List<String> getInput() {
         return input;
