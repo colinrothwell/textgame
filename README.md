@@ -11,6 +11,10 @@ I/O System
 
 Made up of four classes: Listener, Modifier, Printer and Command. Listener and Modifier pass around Commands generated from user input. Modifier then changes the game state. Printer takes care of all the output from the game.
 
+Or that's how Lewis did it. I think it's now simpler than that.
+
+We communicate using UserReponse objects with a type, and a message.
+Conversation options is one of the possibilities.
 To-do
 -----
 

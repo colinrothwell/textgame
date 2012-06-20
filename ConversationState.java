@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 import java.lang.IllegalArgumentException;
+import java.lang.StringBuilder;
 
 /**
  * Represents the state of the Character.

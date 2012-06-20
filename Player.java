@@ -53,7 +53,10 @@ public class Player extends ItemContainer {
         if (npc == null) {
             return UserResponse.error("There's nobody called " + characterName + " here.");
         }
-        return UserResponse.message("I don't want to speak to them!");
+        //return UserResponse.message("I don't want to speak to them!");
+        //ConversationState cs = npc.getState();
+        return npc.getState().getUserResponse();
+
 	}
 	
 	public UserResponse use(String name1, String name2) {
