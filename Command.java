@@ -61,17 +61,23 @@ public class Command {
         },
         COMBINE(combine) {
             UserResponse execute(String[] args, Player player) {
-                switch (args.length) {
-                    case 2:
-                        return player.use(args[0], args[1]);
-                    case 3:
-                        if (args[1].equals("and") || args[1].equals("or")) {
-                            return player.use(args[0], args[2]); 
-                        }
-                        break;
+                String item1 = "";
+                String item2 = "";
+                boolean inFirstItem = true;
+                for (String arg: args) {
+                    if (arg.equals("and") || arg.equals("with")) {
+                        inFirstItem = false;
+                        continue;
+                    }
+                    if (inFirstItem) {
+                        item1 += arg + " ";
+                    }
+                    else {
+                        item2 += arg + " ";
+                    }
                 }
-                System.out.println("Args: " + args.length);
-                return UserResponse.error("Wrong amount of arguments");
+
+                return player.use(item1.trim(), item2.trim());
             }
         },
         TALK(talk) {

@@ -12,6 +12,8 @@ public class UserResponse {
         message = m;
     }
 
+    protected UserResponse() { }
+
     public static UserResponse message(String m) {
         return new UserResponse(UserResponseType.MESSAGE, m);
     }

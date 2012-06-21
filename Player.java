@@ -53,10 +53,9 @@ public class Player extends ItemContainer {
         if (npc == null) {
             return UserResponse.error("There's nobody called " + characterName + " here.");
         }
-        //return UserResponse.message("I don't want to speak to them!");
-        //ConversationState cs = npc.getState();
-        return npc.getState().getUserResponse();
-
+        ConversationState c = npc.getState();
+        return new ConversationResponse(npc, c.getReply(), c.getWinningState(),
+                c.getSpeeches(), c.getAcceptableItems(), c.getGiveableItems());
 	}
 	
 	public UserResponse use(String name1, String name2) {
@@ -71,7 +70,7 @@ public class Player extends ItemContainer {
         }
 
         List<String> in = new ArrayList<String>();
-        in.add(item1.getType());
+        in.add(item1.getType()); 
         in.add(item2.getType());
         Set<Transformation> ts = transman.getTransformations(in);
 

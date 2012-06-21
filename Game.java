@@ -31,6 +31,7 @@ public class Game {
         printer = new Printer(player);
 
         tm.addTransformation(_makeIncompleteSupervisionWork());
+        tm.addTransformation(_makeSWTransform());
     }
 
     /**
@@ -66,6 +67,7 @@ public class Game {
                 "radiator emits a worrying smell.");
         r.addItem(_makePen());
         r.addItem(_makePaper());
+        r.addNPC(_makeLibrarian());
         return r;
     }
 
@@ -85,6 +87,15 @@ public class Game {
         out.add(new Item("isw", "incomplete supervision work", 
                     "you tried your best, but you just don't know enough to " +
                     "complete this supervision work"));
+        return new Transformation(in, out);
+    }
+
+    protected Transformation _makeSWTransform() {
+        List<String> in = new ArrayList<String>();
+        in.add("isw");
+        in.add("textbook");
+        List<Item> out = new ArrayList<Item>();
+        out.add(_makeSupervisionWork());
         return new Transformation(in, out);
     }
 
@@ -120,9 +131,9 @@ public class Game {
         ConversationState end = new ConversationState(
                 "There you go. Remember what I said about returns!");
 
-        askForBook.putGivableItem(_makeTextBook(), end);
+        askForBook.putAcceptableItem(_makeTextBook(), end);
 
-        return new NPC(0, "The Ferocious Librarian", 
+        return new NPC(0, "librarian", //"The Ferocious Librarian", 
                 "The intimidating librarian. She appears to be busy tending to " +
                 "the books. You'd better have a good reason to talk to her.",
                 start);
@@ -156,16 +167,13 @@ public class Game {
                 "BIKING EXPEDITION if you don't hand in your supervision work!");
 
         ConversationState win = new ConversationState("This is excellent work! " +
-                "Let's go mountain biking!") {
-            public String getReply() {
-                //TODO: Work out how to make this work!
-                return super.getReply();
-            }
-        };
+                "Let's go mountain biking!");
+        win.setWinningState(true);
 
-        start.putAcceptableItem(_makeSupervisionWork(), win);
+        start.putGiveableItem(_makeSupervisionWork(), win);
 
-        return new NPC(1, "Dr. John Fawcett, MA PhD (Cantab)",
+        return new NPC(1, "John", 
+                "Dr. John Fawcett, MA PhD (Cantab). " + 
                 "The legendary DoS for Churchill College CompScis. He is " +
                 "rumoured to never leave any survivors. Surprisingly keen on " +
                 "mountain biking.", start);
@@ -190,20 +198,55 @@ public class Game {
         Game game = new Game();
         System.out.println(preamble);
         game.printer.printState();
-        while (true) { //TODO: success condition
-            System.out.print(">> ");
-
-            Command command = null;
-            try {
-                command = new Command(rdr.readLine());
-            } catch (IOException e) {
-                e.printStackTrace();
+        boolean speaking = false;
+        Command command = null;
+        UserResponse resp = null;
+        while (true) {
+            if (!speaking) {
+                System.out.print(">> ");
+                try {
+                    command = new Command(rdr.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                resp = command.execute(game.player);
             }
 
-            UserResponse resp = command.execute(game.player);
             game.printer.printResponse(resp);
 
             switch (resp.getType()) {
+                case CONVERSATION:
+                    speaking = true;
+                    ConversationResponse cresp = (ConversationResponse)resp;
+
+                    if (!cresp.hasActions()) {
+                        speaking = false;
+                        break;
+                    }
+
+                    System.out.print("in conversation >> ");
+
+                    int choice = -1;
+                    try {
+                        choice = Integer.parseInt(rdr.readLine());
+                    } catch (IOException ex) {
+                        System.out.println("That is not a valid choice! Try again.");
+                    }
+                    if (choice == cresp.getHighestAction()) {
+                        speaking = false;
+                        break;
+                    }
+                    ConversationResult crslt = cresp.performAction(choice);
+                    switch (crslt.getType()) {
+                        case GOTITEM:
+                            game.player.addItem(crslt.getItem());
+                            break;
+                        case GAVEITEM:
+                            game.player.removeItem(crslt.getItem());
+                            break;
+                    }
+                    resp = game.player.talkTo(cresp.getPartner().getName());
+                    break;
                 case WIN:
                 case QUIT:
                     return;

@@ -16,13 +16,21 @@ import java.lang.StringBuilder;
  * @see NPC
  */
 class ConversationState {
+    private boolean winningState = false;
+    public void setWinningState(boolean w) {
+        winningState = w;
+    }
+    public boolean getWinningState() {
+        return winningState;
+    }
+
     private String reply;
     public String getReply() { return reply; }
 
     public ConversationState(String reply) {
         this.reply = reply;
         this.acceptableItems = new HashMap<Item, ConversationState>();
-        this.givableItems = new HashMap<Item, ConversationState>();
+        this.giveableItems = new HashMap<Item, ConversationState>();
         this.speeches = new HashMap<String, ConversationState>();
     }
 
@@ -32,7 +40,7 @@ class ConversationState {
             Map<String, ConversationState> speeches) {
         this.reply = reply;
         this.acceptableItems = acceptableItems;
-        this.givableItems = givableItems;
+        this.giveableItems = givableItems;
         this.speeches = speeches;
     }
 
@@ -62,16 +70,16 @@ class ConversationState {
         }
     }
       
-    private Map<Item, ConversationState> givableItems; 
+    private Map<Item, ConversationState> giveableItems; 
     /**
      * @return The set of all items the character can give at this time. 
      */
-    public Set<Item> getGivableItems() {
-        return givableItems.keySet();
+    public Set<Item> getGiveableItems() {
+        return giveableItems.keySet();
     }
 
-    public void putGivableItem(Item i, ConversationState s) {
-        givableItems.put(i, s);
+    public void putGiveableItem(Item i, ConversationState s) {
+        giveableItems.put(i, s);
     }
 
     /**
@@ -79,7 +87,7 @@ class ConversationState {
      * that item at this time
      */
     public ConversationState giveItem(Item i) throws IllegalArgumentException {
-        ConversationState r = givableItems.get(i);
+        ConversationState r = giveableItems.get(i);
         if (r != null) {
             return r;
         }

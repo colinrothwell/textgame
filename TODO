@@ -1,0 +1,6 @@
+- Look at Items in inventory
+- Multiple room names
+
+- Ignore fullstops at end
+- Why do transformations input strings, not items?
+- Why do we use IDs in every object, what's wrong with class refs/name?
